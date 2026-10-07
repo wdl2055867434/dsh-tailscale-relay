@@ -1,0 +1,33 @@
+# ─── 绝对不能提交的 ───────────────────────────────────────────
+# DSH 的凭据文件：里面的 secret 就是登录 cookie 的签名密钥
+.credentials.yaml
+**/.credentials.yaml
+*.credentials.yaml
+
+# SSH 私钥
+id_rsa
+id_ed25519
+id_ecdsa
+id_*
+*.pem
+*.key
+known_hosts
+
+# Tailscale / 云厂商凭据
+*.tskey
+.aws/
+.aliyun/
+.env
+.env.*
+
+# ─── 本方案生成的（含你的真实主机名/域名，别提交）────────────
+# 这些文件里会出现你的 tailnet 名和主机名，上传前请确认已脱敏
+remote-login/
+acl-*.json
+*-backup.json
+
+# ─── 常规 ────────────────────────────────────────────────────
+*.log
+*.tmp
+.DS_Store
+Thumbs.db
