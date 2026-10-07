@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>DSH 登录</title>
+<style>
+  :root { color-scheme: light dark; }
+  body {
+    font: 16px/1.6 -apple-system, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+    max-width: 34rem; margin: 0 auto; padding: 3rem 1.25rem;
+  }
+  h1 { font-size: 1.35rem; margin: 0 0 1rem; }
+  #status { padding: .75rem 1rem; border-radius: .5rem; background: #eef2ff; margin: 1rem 0; }
+  #status.ok  { background: #e7f7ec; }
+  #status.bad { background: #fdeaea; }
+  code { background: #f0f0f0; padding: .1em .35em; border-radius: .25em; word-break: break-all; }
+  a { word-break: break-all; }
+  .muted { opacity: .65; font-size: .875rem; }
+</style>
+</head>
+<body>
+
+<h1>DSH 登录</h1>
+<div id="status">正在写入会话…</div>
+
+<p>写入成功后会自动跳转。如果没有自动跳，点这里：<br>
+<a id="link" href="#">—</a></p>
+
+<p class="muted">
+  会话有效期内不用再来这个页面。<br>
+  到期后（或换设备后）重新打开本页一次即可。
+</p>
+
+<script>
+// ─────────────────────────────────────────────────────────────
+//  替换下面三处：
+//    <AUTHORITY>  =  你的 DSH 的 authority，如 "my-host.example.ts.net:8443"
+//    <TAILNET>    =  你的 tailnet 名，如 "example.ts.net"
+//    <NAME> / <VALUE>  =  scripts/mint-cookie.ps1 生成的 name 和 value
+//
+//  注意 domain 必须写成 tailnet 名（不要带端口），这样手机在登录页
+//  （:8444）拿到的 cookie 才会被带到 DSH（:8443）。
+// ─────────────────────────────────────────────────────────────
+var AUTHORITY = "<AUTHORITY>";
+var TAILNET   = "<TAILNET>";
+var NAME      = "<NAME>";
+var VALUE     = "<VALUE>";
+
+var target = "https://" + AUTHORITY + "/";
+document.getElementById("link").href = target;
+
+var cookie = NAME + "=" + VALUE
+           + "; domain=" + TAILNET
+           + "; path=/; max-age=2592000; SameSite=Strict; Secure";
+document.cookie = cookie;
+
+// 浏览器不会告诉你 cookie 有没有写成功，只能自己检查。
+// 注意：如果 domain 写错了，这里会读不到。
+var ok = document.cookie.indexOf(NAME + "=") !== -1;
+
+var el = document.getElementById("status");
+if (ok) {
+  el.className = "ok";
+  el.textContent = "会话已写入，正在跳转…";
+  setTimeout(function () { location.replace(target); }, 700);
+} else {
+  el.className = "bad";
+  el.textContent = "写入失败 —— 检查 TAILNET 是否写对（必须和当前域名一致的后缀，且不带端口）";
+}
+</script>
+
+</body>
+</html>
